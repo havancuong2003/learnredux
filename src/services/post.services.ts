@@ -4,6 +4,8 @@ import { Post } from "../models/post.model";
 
 // Hàm fetch dữ liệu từ API giả lập
 export const fetchPostsAPI = (page: number, limit: number) => {
+  console.log('api call', page, limit);
+  
   const startIndex = (page - 1) * limit;
   return new Promise<{ data: Post[] }>((resolve) => {
     setTimeout(() => {

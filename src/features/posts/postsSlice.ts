@@ -23,12 +23,18 @@ const postsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchPosts.pending, (state) => {
-        state.status = 'loading';
+       
+          state.status = 'loading'; // Chỉ thay đổi status nếu chưa đang tải hoặc đã tải thất bại
+        
       })
       .addCase(fetchPosts.fulfilled, (state, action) => {
-        state.items.push(...action.payload); // Thêm bài viết vào danh sách
-        state.page += 1; // Tăng số trang
-        state.hasMore = action.payload.length > 0; // Kiểm tra nếu còn bài viết
+        if (action.payload.length > 0) {
+          state.items.push(...action.payload); // Thêm bài viết vào danh sách
+          state.page += 1; // Tăng số trang
+          state.hasMore = action.payload.length === state.limit; // Kiểm tra nếu còn bài viết
+        } else {
+          state.hasMore = false; // Nếu không có bài viết, không cần gọi API thêm nữa
+        }
         state.status = 'succeeded';
       })
       .addCase(fetchPosts.rejected, (state) => {

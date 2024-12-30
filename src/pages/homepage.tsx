@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPosts } from '../features/posts/postsSlice';
 import { useInfiniteScroll } from '../hooks/infinitiScroll';
@@ -12,9 +12,19 @@ const Home: React.FC = () => {
     (state: RootState) => state.posts
   );
 
-  useEffect(() => {
-    dispatch(fetchPosts({ page, limit })); // Gọi dispatch đúng cách
-  }, [dispatch, page, limit]);
+console.log('check page', page);
+const didMountRef = useRef(false); // Reference để theo dõi render lần đầu
+  
+
+useEffect(() => {
+  if (didMountRef.current) return; // Đảm bảo chỉ fetch một lần khi lần đầu mount
+  if (status === 'idle' && hasMore) {
+    dispatch(fetchPosts({ page, limit: 10 }));
+  }
+  console.log('check');
+  
+  didMountRef.current = true; // Đánh dấu đã mount và gọi API
+}, [dispatch, status, page, hasMore]);
 
   const loadMore = () => {
     if (status !== 'loading' && hasMore) {
